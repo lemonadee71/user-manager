@@ -90,7 +90,7 @@ export default class JsonTable<T extends z.ZodObject> {
    * Get rows from table
    *
    * @param options the filter; undefined to get all
-   * @returns the matching rows; undefined if nothing matches
+   * @returns the matching rows; empty array if nothing matches
    */
   public async get(options?: GetOptions<T>): Promise<z.infer<T>[]> {
     await this.load();
@@ -106,7 +106,7 @@ export default class JsonTable<T extends z.ZodObject> {
    * @param options the filter
    * @returns the first matching row; undefined if nothing matches
    */
-  public async first(options: GetOptions<T>): Promise<z.infer<T>> {
+  public async first(options: GetOptions<T>): Promise<z.infer<T> | undefined> {
     const rows = await this.get(options);
     return rows[0];
   }
