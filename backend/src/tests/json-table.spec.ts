@@ -153,4 +153,82 @@ describe('JsonTable', () => {
     expect(rows.length).toBe(2);
     expect(rows.map((row) => row.id)).toEqual([1, 3]);
   });
+
+  it('updates row', async () => {
+    const Users = new JsonTable({ filePath, schema: UsersSchema });
+
+    await Users.init();
+
+    await Users.insert([
+      {
+        id: 1,
+        name: 'First',
+      },
+      {
+        id: 2,
+        name: 'Second',
+      },
+    ]);
+
+    await Users.update({
+      set: {
+        id: 3,
+        name: 'Third',
+      },
+      where: { id: 1 },
+    });
+
+    const originalRow = await Users.first({ where: { id: 1 } });
+    const rows = await Users.get();
+
+    expect(originalRow).toBeUndefined();
+    expect(rows.map((row) => row.id)).toEqual([3, 2]);
+  });
+
+  it('updates multiple rows', async () => {
+    const Users = new JsonTable({ filePath, schema: UsersSchema });
+
+    await Users.init();
+
+    await Users.insert([
+      {
+        id: 1,
+        name: 'First',
+      },
+      {
+        id: 2,
+        name: 'Second',
+      },
+      {
+        id: 3,
+        name: 'Third',
+      },
+    ]);
+
+    await Users.update({
+      set: {
+        name: 'TEST',
+      },
+      where(row) {
+        return row.id > 1;
+      },
+    });
+
+    const rows = await Users.get();
+
+    expect(rows).toEqual([
+      {
+        id: 1,
+        name: 'First',
+      },
+      {
+        id: 2,
+        name: 'TEST',
+      },
+      {
+        id: 3,
+        name: 'TEST',
+      },
+    ]);
+  });
 });

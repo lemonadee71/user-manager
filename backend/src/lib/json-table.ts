@@ -6,8 +6,17 @@ interface JsonTableOptions<T extends z.ZodObject> {
   schema: T;
 }
 
+type WhereFilter<T extends z.ZodObject> =
+  | Partial<z.infer<T>>
+  | ((row: z.infer<T>) => boolean);
+
 interface GetOptions<T extends z.ZodObject> {
-  where: Partial<z.infer<T>> | ((row: z.infer<T>) => boolean);
+  where: WhereFilter<T>;
+}
+
+interface UpdateOptions<T extends z.ZodObject> {
+  set: Partial<z.infer<T>>;
+  where: WhereFilter<T>;
 }
 
 export default class JsonTable<T extends z.ZodObject> {
@@ -90,5 +99,44 @@ export default class JsonTable<T extends z.ZodObject> {
   public async first(options: GetOptions<T>): Promise<z.infer<T>> {
     const rows = await this.get(options);
     return rows[0];
+  }
+
+  /**
+   * Update rows from table
+   *
+   * @param options the filter and the update
+   * @returns the updated rows
+   */
+  public async update(options: UpdateOptions<T>): Promise<z.infer<T>[]> {
+    await this.load();
+
+    const rows: z.infer<T>[] = [];
+
+    this.data.forEach((row) => {
+      let isMatch = false;
+
+      if (typeof options.where === 'function') {
+        isMatch = options.where(row);
+      } else {
+        isMatch = Object.keys(options.where).every(
+          // @ts-expect-error ignore
+          (key) => row[key] === options.where[key],
+        );
+      }
+
+      if (isMatch) {
+        // in place editing
+        // ? there's probably a better option
+        for (const key in options.set) {
+          row[key] = options.set[key]!;
+        }
+
+        rows.push(row);
+      }
+    });
+
+    await this.save();
+
+    return rows;
   }
 }
