@@ -29,6 +29,20 @@ export default class JsonTable<T extends z.ZodObject> {
     this.schema = options.schema;
   }
 
+  /**
+   * Check if given row matches the filter
+   * @param row
+   * @param filter
+   * @returns true if match, false otherwise
+   */
+  private executeFilter(row: z.infer<T>, filter: WhereFilter<T>): boolean {
+    if (typeof filter === 'function') {
+      return filter(row);
+    }
+
+    return Object.keys(filter).every((key) => row[key] === filter[key]);
+  }
+
   public async init() {
     await this.load();
   }
@@ -78,16 +92,7 @@ export default class JsonTable<T extends z.ZodObject> {
 
     if (!options) return this.data;
 
-    if (typeof options.where === 'function') {
-      return this.data.filter(options.where);
-    }
-
-    const keys = Object.keys(options.where) as (keyof z.infer<T>)[];
-
-    return this.data.filter((row) => {
-      // @ts-expect-error won't equal
-      return keys.every((key) => row[key] === options.where[key]);
-    });
+    return this.data.filter((row) => this.executeFilter(row, options.where));
   }
 
   /**
@@ -113,16 +118,7 @@ export default class JsonTable<T extends z.ZodObject> {
     const rows: z.infer<T>[] = [];
 
     this.data.forEach((row) => {
-      let isMatch = false;
-
-      if (typeof options.where === 'function') {
-        isMatch = options.where(row);
-      } else {
-        isMatch = Object.keys(options.where).every(
-          // @ts-expect-error ignore
-          (key) => row[key] === options.where[key],
-        );
-      }
+      const isMatch = this.executeFilter(row, options.where);
 
       if (isMatch) {
         // in place editing
