@@ -10,16 +10,15 @@ export const getUser = async (id: number) => {
 };
 
 export const createUser = async (data: Omit<InsertUser, 'id'>) => {
-  const rows = await UserModel.get();
+  const existing = await UserModel.get({ where: { email: data.email } });
 
   // TODO: Move validation to JsonTable
-  if (rows.some((row) => row.email === data.email)) {
+  if (existing) {
     throw createHttpError(409, 'Duplicate email');
   }
 
-  const newId = rows.length + 1;
   const newRow = await UserModel.insert({
-    id: newId,
+    id: Date.now(),
     ...data,
   });
 
