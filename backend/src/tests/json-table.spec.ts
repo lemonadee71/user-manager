@@ -56,4 +56,27 @@ describe('JsonTable', () => {
     // @ts-expect-error test only
     await expect(Users.insert(row)).rejects.toThrow();
   });
+
+  it('inserts multiple rows', async () => {
+    const Users = new JsonTable({ filePath, schema: UsersSchema });
+
+    await Users.init();
+
+    await Users.insert([
+      {
+        id: 1,
+        name: 'First',
+      },
+      {
+        id: 2,
+        name: 'Second',
+      },
+    ]);
+
+    // eslint-disable-next-line
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+    // eslint-disable-next-line
+    expect(data.length).toBe(2);
+  });
 });

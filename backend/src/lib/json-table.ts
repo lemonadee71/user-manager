@@ -35,12 +35,22 @@ export default class JsonTable<T extends z.ZodObject> {
     await fs.writeFile(this.filePath, JSON.stringify(this.data, null, 2));
   }
 
-  public async insert(data: z.input<typeof this.schema>) {
+  public async insert(data: z.input<T>): Promise<z.output<T>>;
+  public async insert(data: z.input<T>[]): Promise<z.output<T>[]>;
+  public async insert(data: z.input<T> | z.input<T>[]) {
     await this.load();
-    const row = this.schema.parse(data);
 
+    if (Array.isArray(data)) {
+      const rows = data.map((info) => this.schema.parse(info));
+      this.data.push(...rows);
+      await this.save();
+      return rows;
+    }
+
+    const row = this.schema.parse(data);
     this.data.push(row);
     await this.save();
+
     return row;
   }
 }
