@@ -120,6 +120,9 @@ export default class JsonTable<T extends z.ZodObject> {
   public async update(options: UpdateOptions<T>): Promise<z.infer<T>[]> {
     await this.load();
 
+    const UpdateSchema = this.schema.partial();
+    UpdateSchema.parse(options.set);
+
     const rows: z.infer<T>[] = [];
 
     this.data.forEach((row) => {

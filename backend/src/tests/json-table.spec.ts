@@ -232,6 +232,29 @@ describe('JsonTable', () => {
     ]);
   });
 
+  it('throws validation error on update', async () => {
+    const Users = new JsonTable({ filePath, schema: UsersSchema });
+
+    await Users.init();
+
+    await Users.insert([
+      {
+        id: 1,
+        name: 'First',
+      },
+    ]);
+
+    await expect(
+      Users.update({
+        set: {
+          // @ts-expect-error test only
+          name: 10_000,
+        },
+        where: { id: 1 },
+      }),
+    ).rejects.toThrow();
+  });
+
   it('deletes rows', async () => {
     const Users = new JsonTable({ filePath, schema: UsersSchema });
 
