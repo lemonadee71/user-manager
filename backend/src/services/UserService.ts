@@ -34,7 +34,9 @@ export const updateUser = async (
       where: { email: updates.email },
     });
 
-    if (existing) throw createHttpError(409, 'Duplicate email');
+    // don't throw on same user update but still the same email
+    if (existing && existing.id !== id)
+      throw createHttpError(409, 'Duplicate email');
   }
 
   const updatedRows = await UserModel.update({ set: updates, where: { id } });
