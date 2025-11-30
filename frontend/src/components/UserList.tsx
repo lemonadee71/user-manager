@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
+  LinearProgress,
   Paper,
   Table,
   TableBody,
@@ -51,6 +52,9 @@ const UserList = () => {
       </div>
       <TableContainer component={Paper}>
         <Table>
+          <LinearProgress
+            style={{ display: query.isFetching ? 'block' : 'none' }}
+          />
           <TableHead>
             <TableRow>
               <TableCell className="font-bold">Name</TableCell>
