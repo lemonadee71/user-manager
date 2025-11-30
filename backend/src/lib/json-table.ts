@@ -26,7 +26,7 @@ interface DeleteOptions<T extends z.ZodObject> {
 
 export default class JsonTable<T extends z.ZodObject> {
   private filePath: string;
-  private schema: T;
+  public readonly schema: T;
   private data: z.infer<T>[] = [];
 
   constructor(options: JsonTableOptions<T>) {
