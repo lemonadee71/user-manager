@@ -79,4 +79,78 @@ describe('JsonTable', () => {
     // eslint-disable-next-line
     expect(data.length).toBe(2);
   });
+
+  it('gets all rows', async () => {
+    const Users = new JsonTable({ filePath, schema: UsersSchema });
+
+    await Users.init();
+
+    await Users.insert([
+      {
+        id: 1,
+        name: 'First',
+      },
+      {
+        id: 2,
+        name: 'Second',
+      },
+    ]);
+
+    const rows = await Users.get();
+
+    expect(rows.length).toBe(2);
+  });
+
+  it('gets single row', async () => {
+    const Users = new JsonTable({ filePath, schema: UsersSchema });
+
+    await Users.init();
+
+    const firstRow = {
+      id: 1,
+      name: 'First',
+    };
+
+    await Users.insert([
+      firstRow,
+      {
+        id: 2,
+        name: 'Second',
+      },
+    ]);
+
+    const row = await Users.first({
+      where: (row) => typeof row.name === 'string',
+    });
+
+    expect(row).toEqual(firstRow);
+  });
+
+  it('gets rows based on custom filter', async () => {
+    const Users = new JsonTable({ filePath, schema: UsersSchema });
+
+    await Users.init();
+
+    await Users.insert([
+      {
+        id: 1,
+        name: 'First',
+      },
+      {
+        id: 2,
+        name: 'Second',
+      },
+      {
+        id: 3,
+        name: 'Second',
+      },
+    ]);
+
+    const rows = await Users.get({
+      where: (row) => row.id === 1 || row.id === 3,
+    });
+
+    expect(rows.length).toBe(2);
+    expect(rows.map((row) => row.id)).toEqual([1, 3]);
+  });
 });

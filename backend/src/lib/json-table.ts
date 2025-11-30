@@ -6,6 +6,10 @@ interface JsonTableOptions<T extends z.ZodObject> {
   schema: T;
 }
 
+interface GetOptions<T extends z.ZodObject> {
+  where: Partial<z.infer<T>> | ((row: z.infer<T>) => boolean);
+}
+
 export default class JsonTable<T extends z.ZodObject> {
   private filePath: string;
   private schema: T;
@@ -35,9 +39,9 @@ export default class JsonTable<T extends z.ZodObject> {
     await fs.writeFile(this.filePath, JSON.stringify(this.data, null, 2));
   }
 
-  public async insert(data: z.input<T>): Promise<z.output<T>>;
-  public async insert(data: z.input<T>[]): Promise<z.output<T>[]>;
-  public async insert(data: z.input<T> | z.input<T>[]) {
+  public async insert(data: z.infer<T>): Promise<z.infer<T>>;
+  public async insert(data: z.infer<T>[]): Promise<z.infer<T>[]>;
+  public async insert(data: z.infer<T> | z.infer<T>[]) {
     await this.load();
 
     if (Array.isArray(data)) {
@@ -52,5 +56,39 @@ export default class JsonTable<T extends z.ZodObject> {
     await this.save();
 
     return row;
+  }
+
+  /**
+   * Get rows from table
+   *
+   * @param options the filter; undefined to get all
+   * @returns the matching rows; undefined if nothing matches
+   */
+  public async get(options?: GetOptions<T>): Promise<z.infer<T>[]> {
+    await this.load();
+
+    if (!options) return this.data;
+
+    if (typeof options.where === 'function') {
+      return this.data.filter(options.where);
+    }
+
+    const keys = Object.keys(options.where) as (keyof z.infer<T>)[];
+
+    return this.data.filter((row) => {
+      // @ts-expect-error won't equal
+      return keys.every((key) => row[key] === options.where[key]);
+    });
+  }
+
+  /**
+   * Get row from table
+   *
+   * @param options the filter
+   * @returns the first matching row; undefined if nothing matches
+   */
+  public async first(options: GetOptions<T>): Promise<z.infer<T>> {
+    const rows = await this.get(options);
+    return rows[0];
   }
 }
