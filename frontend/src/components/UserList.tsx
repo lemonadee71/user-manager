@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
-  IconButton,
   LinearProgress,
   Paper,
   Table,
@@ -12,13 +11,13 @@ import {
   TableRow,
   TextField,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+
 import { matchSorter } from 'match-sorter';
 import type { User } from '../types';
 import CreateUserForm from './CreateUserForm';
+import UserRow from './UserRow';
 
 const UserList = () => {
-  const queryClient = useQueryClient();
   const [searchText, setSearchText] = useState('');
   const query = useQuery({
     queryKey: ['users'],
@@ -39,34 +38,6 @@ const UserList = () => {
   const filteredUsers = searchText
     ? matchSorter(allUsers, searchText, { keys: ['name', 'username', 'email'] })
     : allUsers;
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      const response = await fetch(
-        import.meta.env.VITE_PUBLIC_API_URL + `/api/users/${id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      if (!response.ok) throw new Error('Failed to delete user');
-
-      const { user } = (await response.json()) as { user: User };
-
-      return user;
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-    onError: (e) => {
-      alert(e.message);
-    },
-  });
-
-  const handleDelete = (id: number) => deleteMutation.mutate(id);
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -96,20 +67,7 @@ const UserList = () => {
           </TableHead>
           <TableBody>
             {filteredUsers.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.username}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell className="flex flex-row gap-5">
-                  <IconButton
-                    size="medium"
-                    color="error"
-                    onClick={() => handleDelete(user.id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
+              <UserRow key={user.id} data={user} />
             ))}
           </TableBody>
         </Table>
