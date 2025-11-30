@@ -10,7 +10,7 @@ export const getUser = async (id: number) => {
 };
 
 export const createUser = async (data: Omit<InsertUser, 'id'>) => {
-  const existing = await UserModel.get({ where: { email: data.email } });
+  const existing = await UserModel.first({ where: { email: data.email } });
 
   // TODO: Move validation to JsonTable
   if (existing) {
