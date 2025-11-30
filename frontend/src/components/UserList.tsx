@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { matchSorter } from 'match-sorter';
 import type { User } from '../types';
+import CreateUserForm from './CreateUserForm';
 
 const UserList = () => {
   const [searchText, setSearchText] = useState('');
@@ -37,14 +38,17 @@ const UserList = () => {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <TextField
-        id="search"
-        label="Search"
-        variant="outlined"
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        className="mb-4"
-      />
+      <div className="flex flex-row justify-between items-center">
+        <TextField
+          id="search"
+          label="Search"
+          variant="outlined"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          className="mb-4"
+        />
+        <CreateUserForm />
+      </div>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
