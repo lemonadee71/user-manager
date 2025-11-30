@@ -21,11 +21,10 @@ interface UserRowProps {
 const UserRow = ({ data }: UserRowProps) => {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
-  const { control, handleSubmit, setValue, setError, formState, reset } =
-    useForm({
-      resolver: zodResolver(UserSchema),
-      defaultValues: data,
-    });
+  const { control, handleSubmit, setValue, setError, reset } = useForm({
+    resolver: zodResolver(UserSchema),
+    defaultValues: data,
+  });
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
       const response = await fetch(
@@ -113,12 +112,9 @@ const UserRow = ({ data }: UserRowProps) => {
 
   const handleDelete = (id: number) => deleteMutation.mutate(id);
 
+  // TODO: Only update if actual changes are made
   const handleSave = handleSubmit((data) => {
-    if (formState.isDirty) {
-      updateMutation.mutate(data);
-    } else {
-      stopEditing();
-    }
+    updateMutation.mutate(data);
   });
 
   return (
