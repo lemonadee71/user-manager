@@ -231,4 +231,38 @@ describe('JsonTable', () => {
       },
     ]);
   });
+
+  it('deletes rows', async () => {
+    const Users = new JsonTable({ filePath, schema: UsersSchema });
+
+    await Users.init();
+
+    await Users.insert([
+      {
+        id: 1,
+        name: 'First',
+      },
+      {
+        id: 2,
+        name: 'Second',
+      },
+      {
+        id: 3,
+        name: 'Third',
+      },
+    ]);
+
+    await Users.delete({ where: (row) => row.id < 3 });
+
+    // eslint-disable-next-line
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+    // eslint-disable-next-line
+    expect(data.length).toBe(1);
+    // eslint-disable-next-line
+    expect(data[0]).toEqual({
+      id: 3,
+      name: 'Third',
+    });
+  });
 });

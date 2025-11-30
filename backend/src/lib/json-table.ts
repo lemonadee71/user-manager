@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import { z } from 'zod';
+import { splitArray } from './utils.js';
 
 interface JsonTableOptions<T extends z.ZodObject> {
   filePath: string;
@@ -16,6 +17,10 @@ interface GetOptions<T extends z.ZodObject> {
 
 interface UpdateOptions<T extends z.ZodObject> {
   set: Partial<z.infer<T>>;
+  where: WhereFilter<T>;
+}
+
+interface DeleteOptions<T extends z.ZodObject> {
   where: WhereFilter<T>;
 }
 
@@ -134,5 +139,24 @@ export default class JsonTable<T extends z.ZodObject> {
     await this.save();
 
     return rows;
+  }
+
+  /**
+   * Delete rows
+   * @param options the filter
+   * @returns the deleted rows
+   */
+  public async delete(options: DeleteOptions<T>): Promise<z.infer<T>[]> {
+    await this.load();
+
+    const [removed, remaining] = splitArray(this.data, (row) => {
+      return this.executeFilter(row, options.where);
+    });
+
+    this.data = remaining;
+
+    await this.save();
+
+    return removed;
   }
 }
