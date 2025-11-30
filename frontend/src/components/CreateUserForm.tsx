@@ -184,7 +184,13 @@ const CreateUserForm = () => {
           <Button onClick={handleClose} color="error">
             Cancel
           </Button>
-          <Button type="submit" form="create-user-form" variant="contained">
+          <Button
+            type="submit"
+            form="create-user-form"
+            variant="contained"
+            loading={mutation.isPending}
+            disabled={mutation.isPending}
+          >
             Submit
           </Button>
         </DialogActions>
