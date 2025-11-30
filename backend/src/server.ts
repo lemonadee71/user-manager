@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import cors from 'cors';
 import express, { ErrorRequestHandler } from 'express';
 import { HttpError } from 'http-errors';
+import { z } from 'zod';
+import { formatZodError } from './lib/zod.js';
 
 const app = express();
 
@@ -42,6 +44,17 @@ app.use(((err, req, res, next) => {
       success: false,
       message: err.message,
       error: err.name,
+    });
+  }
+
+  if (err instanceof z.ZodError) {
+    const details = formatZodError(err);
+
+    res.status(422).json({
+      success: false,
+      message: details.error,
+      error: err.name,
+      details: details.fieldErrors,
     });
   }
 
