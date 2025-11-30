@@ -8,6 +8,7 @@ import express, { ErrorRequestHandler } from 'express';
 import { HttpError } from 'http-errors';
 import { z } from 'zod';
 import { formatZodError } from './lib/zod.js';
+import ApiRouter from './routes/index.js';
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors());
+
+app.use('/api', ApiRouter);
 
 app.get('/', (req, res) => {
   res.status(200).json({
