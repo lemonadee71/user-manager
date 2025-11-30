@@ -81,11 +81,11 @@ const UserList = () => {
         />
         <CreateUserForm />
       </div>
+      <LinearProgress
+        style={{ display: query.isFetching ? 'block' : 'none' }}
+      />
       <TableContainer component={Paper}>
         <Table>
-          <LinearProgress
-            style={{ display: query.isFetching ? 'block' : 'none' }}
-          />
           <TableHead>
             <TableRow>
               <TableCell className="font-bold">Name</TableCell>
