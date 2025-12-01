@@ -1,0 +1,33 @@
+{
+  "name": "user-manager",
+  "version": "1.0.0",
+  "description": "Simple user management system that showcases CRUD",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "dev": "concurrently \"npm:dev-backend\" \"npm:dev-frontend\"",
+    "dev-backend": "npm --prefix backend run dev",
+    "dev-frontend": "npm --prefix frontend run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lemonadee71/user-manager.git"
+  },
+  "keywords": [
+    "crud",
+    "node",
+    "express",
+    "react",
+    "json"
+  ],
+  "author": "Shin Andrei Riego",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lemonadee71/user-manager/issues"
+  },
+  "homepage": "https://github.com/lemonadee71/user-manager#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
