@@ -17,6 +17,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { User } from '../types';
 import { ApiError } from '../lib/errors';
 import { UserSchema } from '../lib/models';
+import { API_URL } from '../lib/constants';
 
 const CreateUserForm = () => {
   const queryClient = useQueryClient();
@@ -27,16 +28,13 @@ const CreateUserForm = () => {
   });
   const mutation = useMutation({
     mutationFn: async (data: z.infer<typeof UserSchema>) => {
-      const response = await fetch(
-        import.meta.env.VITE_PUBLIC_API_URL + '/api/users',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+      const response = await fetch(API_URL + '/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(data),
+      });
 
       if (response.status === 409) {
         throw new ApiError('Duplicate email', {

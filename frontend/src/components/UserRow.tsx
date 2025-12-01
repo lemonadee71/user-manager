@@ -13,6 +13,7 @@ import { z } from 'zod';
 import type { User } from '../types';
 import { UserSchema } from '../lib/models';
 import { ApiError } from '../lib/errors';
+import { API_URL } from '../lib/constants';
 
 interface UserRowProps {
   data: User;
@@ -27,15 +28,12 @@ const UserRow = ({ data }: UserRowProps) => {
   });
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(
-        import.meta.env.VITE_PUBLIC_API_URL + `/api/users/${id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      const response = await fetch(API_URL + `/api/users/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+      });
 
       if (!response.ok) throw new Error('Failed to delete user');
 
@@ -52,16 +50,13 @@ const UserRow = ({ data }: UserRowProps) => {
   });
   const updateMutation = useMutation({
     mutationFn: async (newData: z.infer<typeof UserSchema>) => {
-      const response = await fetch(
-        import.meta.env.VITE_PUBLIC_API_URL + `/api/users/${data.id}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(newData),
+      const response = await fetch(API_URL + `/api/users/${data.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(newData),
+      });
 
       if (response.status === 409) {
         throw new ApiError('Duplicate email', {

@@ -16,15 +16,14 @@ import { matchSorter } from 'match-sorter';
 import type { User } from '../types';
 import CreateUserForm from './CreateUserForm';
 import UserRow from './UserRow';
+import { API_URL } from '../lib/constants';
 
 const UserList = () => {
   const [searchText, setSearchText] = useState('');
   const query = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const response = await fetch(
-        import.meta.env.VITE_PUBLIC_API_URL + '/api/users',
-      );
+      const response = await fetch(API_URL + '/api/users');
 
       if (!response.ok) return [];
 
