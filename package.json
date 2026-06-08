@@ -5,10 +5,10 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
-    "dev": "concurrently \"npm:dev-backend\" \"npm:dev-frontend\"",
-    "dev-backend": "npm --prefix backend run dev",
-    "dev-frontend": "npm --prefix frontend run dev"
+    "dev": "pnpm --recursive --parallel run dev",
+    "build": "pnpm --recursive run build",
+    "lint": "pnpm --recursive run lint",
+    "test": "pnpm --recursive run test"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,12 @@
   },
   "homepage": "https://github.com/lemonadee71/user-manager#readme",
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.1",
+    "prettier": "^3.7.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.0"
   }
 }

@@ -33,21 +33,16 @@
     "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
     "@tsconfig/node22": "^22.0.5",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
+    "@types/http-errors": "^2.0.5",
     "@types/morgan": "^1.9.10",
-    "@types/node": "^24.10.1",
     "@vitest/coverage-v8": "^4.0.14",
     "@vitest/eslint-plugin": "^1.5.1",
-    "eslint": "^9.39.1",
     "eslint-plugin-perfectionist": "^4.15.1",
-    "prettier": "^3.7.3",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.48.0",
     "vitest": "^4.0.14"
   }
 }
